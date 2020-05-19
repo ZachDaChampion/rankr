@@ -1,10 +1,11 @@
 <template>
   <div class="search-box">
     <input
+      :autofocus="!!focus"
       id="box"
       v-model="msg"
       placeholder="Search for a show to rank"
-      :style="{ width: msg.length > 14 ? 'calc(100% - 256px)' : '420px' }"
+      :style="{ minWidth: msg.length > 14 ? 'calc(100vw - 256px)' : '420px' }"
     />
   </div>
 </template>
@@ -15,6 +16,9 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class SearchBox extends Vue {
   msg = "";
+
+  @Prop({ required: true })
+  public focus!: boolean;
 }
 </script>
 
@@ -29,7 +33,6 @@ export default class SearchBox extends Vue {
   border-radius: 100vh;
   outline: none;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  transform: translateY(50%);
   transition: 250ms, width 500ms;
 }
 
