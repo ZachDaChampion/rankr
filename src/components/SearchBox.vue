@@ -5,7 +5,12 @@
       id="box"
       v-model="msg"
       placeholder="Search for a show to rank"
-      :style="{ minWidth: msg.length > 14 ? 'calc(100vw - 256px)' : '420px' }"
+      :style="{
+        minWidth:
+          msg.length > 15
+            ? 'min(calc(100vw - 256px), 1024px)'
+            : 'min(calc(100vw - 256px), 420px)'
+      }"
     />
   </div>
 </template>
