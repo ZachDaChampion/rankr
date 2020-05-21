@@ -73,5 +73,6 @@ export default {
   grid-gap: 64px;
   grid-template-columns: repeat(auto-fill, 300px);
   justify-content: center;
+  justify-items: center;
 }
 </style>
