@@ -9,14 +9,16 @@
         minWidth:
           msg.length > 15
             ? 'min(calc(100vw - 256px), 1024px)'
-            : 'min(calc(100vw - 256px), 420px)'
+            : 'min(calc(100vw - 256px), 420px)',
       }"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import debounce from "debounce";
+import axios from "axios";
 
 @Component
 export default class SearchBox extends Vue {
@@ -24,6 +26,24 @@ export default class SearchBox extends Vue {
 
   @Prop({ required: true })
   public focus!: boolean;
+
+  @Prop({ required: false, default: 1000 })
+  public debounceTime!: number;
+
+  @Watch("msg")
+  onPropertyChanged = debounce((value: string) => {
+    console.log("value", value);
+    console.log("token");
+    if (value.trim())
+      axios
+        .get(`https://api.themoviedb.org/3/tv/82856?query=${value}`, {
+          headers: {
+            Authorization: `Bearer `,
+          },
+        })
+        .then((result) => console.log("result", result));
+    // .then((result) => this.$emit("search", result));
+  }, this.debounceTime);
 }
 </script>
 
