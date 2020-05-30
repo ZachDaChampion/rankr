@@ -3,26 +3,7 @@
     <div id="title-with-shadow" />
     <title-area id="title" />
     <search-box id="search" :focus="true" />
-    <div id="poster-grid">
-      <poster-preview
-        img-link="https://image.tmdb.org/t/p/w500/sUTqIb82LxYhPT0SfI8AR03GLpz.jpg"
-        title="The Mandalorian"
-        poster-width="250px"
-      />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-      <poster-preview title="Another example" poster-width="250px" />
-    </div>
+    <poster-grid />
   </div>
 </template>
 
@@ -30,15 +11,15 @@
 // @ is an alias to /src
 import TitleArea from "@/components/TitleArea.vue";
 import SearchBox from "@/components/SearchBox.vue";
-import PosterPreview from "@/components/PosterPreview.vue";
+import PosterGrid from "@/components/PosterGrid.vue";
 
 export default {
   name: "Selector",
   components: {
     TitleArea,
     SearchBox,
-    PosterPreview
-  }
+    PosterGrid,
+  },
 };
 </script>
 
@@ -63,16 +44,5 @@ export default {
   top: 64px;
   transform: translateY(-50%);
   z-index: 100;
-}
-
-#poster-grid {
-  display: grid;
-  margin: 96px;
-  margin-top: 32px;
-  gap: 64px;
-  grid-gap: 64px;
-  grid-template-columns: repeat(auto-fill, 300px);
-  justify-content: center;
-  justify-items: center;
 }
 </style>

@@ -19,10 +19,24 @@
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import debounce from "debounce";
 import axios from "axios";
+// import { EventBus } from './event-bus.js';
 
 @Component
 export default class SearchBox extends Vue {
   msg = "";
+
+  refreshSearchResults(data: Array<any>): void {
+    console.log("DATA", data);
+    const mappedData = data.map((val) => {
+      return {
+        id: val.id,
+        title: `${val.name} (${val.year})`,
+        link: val.poster_path,
+      };
+    });
+    console.log("MAPPED DATA", mappedData);
+    this.$store.dispatch("updateSearchResults", mappedData);
+  }
 
   @Prop({ required: true })
   public focus!: boolean;
@@ -33,16 +47,10 @@ export default class SearchBox extends Vue {
   @Watch("msg")
   onPropertyChanged = debounce((value: string) => {
     console.log("value", value);
-    console.log("token");
     if (value.trim())
       axios
-        .get(`https://api.themoviedb.org/3/tv/82856?query=${value}`, {
-          headers: {
-            Authorization: `Bearer `,
-          },
-        })
-        .then((result) => console.log("result", result));
-    // .then((result) => this.$emit("search", result));
+        .get(`http://localhost:3000/tvsearch?search=${value}`)
+        .then((result) => this.refreshSearchResults(result.data));
   }, this.debounceTime);
 }
 </script>

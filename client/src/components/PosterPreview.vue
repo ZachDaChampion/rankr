@@ -1,6 +1,10 @@
 <template>
   <div class="poster-preview" :style="{ width: posterWidth }">
-    <img id="img" :src="imgLink" :style="{ height: posterHeight }" />
+    <img
+      id="img"
+      :src="compImgLink"
+      :style="{ height: posterHeight, width: posterWidth }"
+    />
     <h2>{{ title }}</h2>
   </div>
 </template>
@@ -21,6 +25,10 @@ export default class PosterPreview extends Vue {
 
   get posterHeight() {
     return parseInt(this.posterWidth, 10) * 1.5 + "px";
+  }
+
+  get compImgLink(): string {
+    return this.imgLink || require("@/assets/no_poster.jpg");
   }
 }
 </script>
