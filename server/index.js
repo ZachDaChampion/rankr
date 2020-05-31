@@ -49,4 +49,51 @@ app.get("/tvsearch", async (req, res) => {
   return await res.send(response);
 });
 
+app.get("/tvdetails", async (req, res) => {
+  const id = req.query.id;
+  let episodes = [];
+  console.log("TV DETAILS", id);
+
+  const tvDetails = (
+    await axios.get(`https://api.themoviedb.org/3/tv/${id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+      },
+    })
+  ).data;
+  console.log("DETAILS", tvDetails);
+
+  const seasons = tvDetails.number_of_seasons;
+  console.log("SEASONS", seasons);
+  if (!seasons) return res.send(null);
+
+  const seasonPromises = [];
+  for (let i = 1; i <= seasons; ++i) {
+    console.log("REQUEST", `https://api.themoviedb.org/3/tv/${id}/season/${i}`);
+    seasonPromises.push(
+      axios
+        .get(`https://api.themoviedb.org/3/tv/${id}/season/${i}`, {
+          headers: {
+            Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+          },
+        })
+        .then((result) => {
+          episodes = episodes.concat(
+            result.data.episodes.map((episode) => {
+              return {
+                season: i,
+                number: episode.episode_number,
+              };
+            })
+          );
+        })
+        .catch((err) => console.error(err))
+    );
+  }
+  await Promise.all(seasonPromises);
+
+  console.log("EPISODES", episodes);
+  return res.send(episodes);
+});
+
 app.listen(port);
