@@ -5,6 +5,7 @@
       :key="index"
       :title="item.title"
       :img-link="item.link"
+      :id="item.id"
       poster-width="250px"
     />
     <!-- <div :v-for="(title, link) in posters">

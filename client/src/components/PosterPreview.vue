@@ -1,5 +1,5 @@
 <template>
-  <div class="poster-preview" :style="{ width: posterWidth }">
+  <div class="poster-preview" :style="{ width: posterWidth }" @click="navigate()">
     <img
       id="img"
       :src="compImgLink"
@@ -14,7 +14,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class PosterPreview extends Vue {
-  @Prop({ required: false, default: require("@/assets/no_poster.jpg") })
+  @Prop({ required: true })
   public imgLink!: string;
 
   @Prop({ required: true })
@@ -23,12 +23,19 @@ export default class PosterPreview extends Vue {
   @Prop({ required: true })
   public posterWidth!: string;
 
+  @Prop({ required: true })
+  public id!: number;
+
   get posterHeight() {
     return parseInt(this.posterWidth, 10) * 1.5 + "px";
   }
 
   get compImgLink(): string {
     return this.imgLink || require("@/assets/no_poster.jpg");
+  }
+
+  navigate() {
+    this.$router.push({path: 'compare', query: {id: this.id.toString()}})
   }
 }
 </script>
