@@ -23,7 +23,7 @@ import axios from "axios";
 
 @Component
 export default class SearchBox extends Vue {
-  msg = "";
+  msg = this.$store.state.searchTerm;
 
   refreshSearchResults(data: Array<any>): void {
     console.log("DATA", data);
@@ -34,7 +34,6 @@ export default class SearchBox extends Vue {
         link: val.poster_path,
       };
     });
-    console.log("MAPPED DATA", mappedData);
     this.$store.dispatch("updateSearchResults", mappedData);
   }
 
@@ -46,7 +45,7 @@ export default class SearchBox extends Vue {
 
   @Watch("msg")
   onPropertyChanged = debounce((value: string) => {
-    console.log("value", value);
+    this.$store.dispatch("updateSearchTerm", value);
     if (value.trim())
       axios
         .get(`http://localhost:3000/tvsearch?search=${value}`)
