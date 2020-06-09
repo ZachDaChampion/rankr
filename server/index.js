@@ -5,11 +5,41 @@ const axios = require("axios");
 const url = require("url");
 require("dotenv").config();
 
+async function getImgPath(size, path) {
+  return (
+    (
+      await axios.get("https://api.themoviedb.org/3/configuration", {
+        headers: {
+          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+        },
+      })
+    ).data.images.secure_base_url +
+    (size || "original") +
+    (path || "")
+  );
+}
+
 app.get("/", (req, res) => res.send("hello world"));
+
+app.get("/imgpath", async (req, res) =>
+  res.send(await getImgPath(req.query.size, req.query.path))
+);
 
 app.get("/placeholderposter", (req, res) => {
   console.log("file");
   return res.sendFile("no_poster.jpg", {
+    root: __dirname,
+    dotfiles: "deny",
+    headers: {
+      "x-timestamp": Date.now(),
+      "x-sent": true,
+    },
+  });
+});
+
+app.get("/placeholderstill", (req, res) => {
+  console.log("file");
+  return res.sendFile("no_still.jpg", {
     root: __dirname,
     dotfiles: "deny",
     headers: {
@@ -30,20 +60,22 @@ app.get("/tvsearch", async (req, res) => {
     }
   );
 
-  const response = result.data.results.map((val) => {
-    return {
-      poster_path: val.poster_path
-        ? `http://image.tmdb.org/t/p/w342/${val.poster_path}`
-        : url.format({
-            protocol: req.protocol,
-            host: req.get("host"),
-            pathname: "/placeholderposter",
-          }),
-      name: val.name,
-      year: val.first_air_date ? val.first_air_date.split("-")[0] : "Unknown",
-      id: val.id,
-    };
-  });
+  const response = await Promise.all(
+    result.data.results.map(async (val) => {
+      return {
+        poster_path: val.poster_path
+          ? await getImgPath("w342", val.poster_path)
+          : url.format({
+              protocol: req.protocol,
+              host: req.get("host"),
+              pathname: "/placeholderposter",
+            }),
+        name: val.name,
+        year: val.first_air_date ? val.first_air_date.split("-")[0] : "Unknown",
+        id: val.id,
+      };
+    })
+  ).then((completed) => completed);
 
   console.log("result", response);
   return await res.send(response);
@@ -94,6 +126,44 @@ app.get("/tvdetails", async (req, res) => {
 
   console.log("EPISODES", episodes);
   return res.send(episodes);
+});
+
+app.get("/episode", async (req, res) => {
+  const showId = req.query.show;
+  const seasonNum = req.query.s;
+  const episodeNum = req.query.e;
+
+  const rawData = (
+    await axios.get(
+      `https://api.themoviedb.org/3/tv/${showId}/season/${seasonNum}/episode/${episodeNum}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+        },
+      }
+    )
+  ).data;
+
+  const result = {
+    season: rawData.season_number,
+    episode: episodeNum,
+    title: rawData.name,
+    overview: rawData.overview,
+    date: rawData.air_date,
+    img: rawData.still_path
+      ? await getImgPath(
+          req.query.imgsize ? req.query.imgsize : "original",
+          rawData.still_path
+        )
+      : url.format({
+          protocol: req.protocol,
+          host: req.get("host"),
+          pathname: "/placeholderstill",
+        }),
+  };
+
+  console.log("EPISODE", result);
+  return res.send(result);
 });
 
 app.listen(port);
