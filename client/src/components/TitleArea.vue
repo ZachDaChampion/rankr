@@ -18,12 +18,15 @@ export default class TitleArea extends Vue {}
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@500&family=Varela+Round&display=swap");
+
 .title-area {
   background-color: #383a59;
 }
 
 h1 {
-  font-size: 96px;
+  font-family: "Hind Madurai", sans-serif;
+  font-size: 6em;
   margin: 0;
 }
 
