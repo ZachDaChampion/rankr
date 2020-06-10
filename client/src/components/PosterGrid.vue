@@ -1,5 +1,5 @@
 <template>
-  <transition-group class="poster-grid" name="slide" tag="poster-preview">
+  <transition-group class="poster-grid" name="slide">
     <poster-preview
       v-for="item in posters"
       class="poster"
