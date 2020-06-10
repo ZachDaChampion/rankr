@@ -41,6 +41,8 @@ export default class PosterPreview extends Vue {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@500&family=Varela+Round&display=swap");
+
 .poster-preview {
   border-radius: 16px;
   transition: 200ms;
@@ -58,6 +60,7 @@ export default class PosterPreview extends Vue {
 }
 
 h2 {
+  font-family: "Hind Madurai", sans-serif;
   color: white;
   opacity: 0.75;
 }
