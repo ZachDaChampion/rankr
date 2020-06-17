@@ -1,24 +1,33 @@
 <template>
   <div class="compare">
-    <div class="compare-section">
-      <h1>The Mandalorian</h1>
-      <div id="episodes">
-        <episode id="episode-start-active" />
-        <h2>OR</h2>
-        <episode id="episode-start-active" />
-      </div>
-    </div>
+    <h1>{{ showTitle }}</h1>
+    <compare-section />
     <div class="ranking-details"></div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import Episode from "@/components/Episode.vue";
+import CompareSection from "@/components/CompareSection.vue";
+import axios from "axios";
 
 export default Vue.extend({
   name: "Compare",
-  components: { Episode },
+  components: { CompareSection },
+  data: () => {
+    return {
+      showTitle: "",
+    };
+  },
+  created: async function() {
+    return (this.showTitle =
+      this.$store.getters.getCached(this.$route.query.id) ||
+      (
+        await axios.get(
+          `http://localhost:3000/tvtitle?id=${this.$route.query.id}`
+        )
+      ).data);
+  },
 });
 </script>
 
@@ -38,20 +47,10 @@ h2 {
   margin-bottom: 64px;
 }
 
-.compare-section {
-  width: 100%;
-  min-height: 100vh;
-  background-color: #383a59;
-}
-
 .ranking-details {
   width: 100%;
-  background-color: #282a36;
-}
-
-#episodes {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  height: 100vh;
+  background-color: #21222c;
+  /* background-color: #282a36; */
 }
 </style>
