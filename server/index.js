@@ -81,6 +81,18 @@ app.get("/tvsearch", async (req, res) => {
   return await res.send(response);
 });
 
+app.get("/tvtitle", async (req, res) =>
+  res.send(
+    (
+      await axios.get(`https://api.themoviedb.org/3/tv/${req.query.id}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+        },
+      })
+    ).data.name
+  )
+);
+
 app.get("/tvdetails", async (req, res) => {
   const id = req.query.id;
   let episodes = [];
