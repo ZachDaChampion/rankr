@@ -1,5 +1,9 @@
 <template>
-  <div class="poster-preview" :style="{ width: posterWidth }" @click="navigate()">
+  <div
+    class="poster-preview"
+    :style="{ width: posterWidth }"
+    @click="navigate()"
+  >
     <img
       id="img"
       :src="compImgLink"
@@ -35,7 +39,11 @@ export default class PosterPreview extends Vue {
   }
 
   navigate() {
-    this.$router.push({path: 'compare', query: {id: this.id.toString()}})
+    this.$store.dispatch("updateCache", {
+      name: this.id.toString(),
+      data: this.title,
+    });
+    this.$router.push({ path: "compare", query: { id: this.id.toString() } });
   }
 }
 </script>
