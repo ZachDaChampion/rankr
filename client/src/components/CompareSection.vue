@@ -9,9 +9,19 @@
             imagesLoaded
         "
       >
-        <episode id="episode-first" ref="episodeFirst" :data="firstEp" />
+        <episode
+          id="episode-first"
+          ref="episodeFirst"
+          :data="firstEp"
+          @click.native="chooseWinner(0)"
+        />
         <h2>OR</h2>
-        <episode id="episode-second" ref="episodeSecond" :data="secondEp" />
+        <episode
+          id="episode-second"
+          ref="episodeSecond"
+          :data="secondEp"
+          @click.native="chooseWinner(1)"
+        />
       </div>
     </transition>
     <h2
@@ -58,7 +68,6 @@ export default class CompareSection extends Vue {
   }
 
   get imagesLoaded() {
-    console.log("Episode", this.$refs);
     return (
       (this.$refs.episodeFirst as Episode).imgLoaded &&
       (this.$refs.episodeSecond as Episode).imgLoaded
@@ -68,18 +77,11 @@ export default class CompareSection extends Vue {
   async created() {
     if (!this.episodesDownloaded)
       await this.$store.dispatch("downloadComparisons", this.id);
-    console.log("LOOKUP", this.lookup);
     const chosen = this.pickRandom();
-    console.log("ADJUSTED", chosen);
-    console.log("REFS", this.$refs);
 
     if (!chosen) return 0;
 
-    return await this.setComparison(
-      this.id,
-      this.lookup[chosen[0]],
-      this.lookup[chosen[1]]
-    );
+    return await this.setComparison(this.id, chosen[0], chosen[1]);
   }
 
   pickRandom() {
@@ -87,8 +89,6 @@ export default class CompareSection extends Vue {
     const firstOrig = Math.floor(Math.random() * secondOrig);
     let first = firstOrig;
     let second = secondOrig;
-
-    console.log("ORIGINAL", [first, second]);
 
     while (first === second || this.comparisons[first][second]) {
       ++first;
@@ -107,7 +107,15 @@ export default class CompareSection extends Vue {
     return [first, second];
   }
 
-  async setComparison(showId: string, first: any, second: any, delay = 0) {
+  async setComparison(
+    showId: string,
+    firstIndex: number,
+    secondIndex: number,
+    delay = 0
+  ) {
+    const first = this.lookup[firstIndex];
+    const second = this.lookup[secondIndex];
+
     const promFirst = axios
       .get(
         `http://localhost:3000/episode?show=${showId}&s=${first.season}&e=${first.number}&imgsize=w780`
@@ -120,18 +128,39 @@ export default class CompareSection extends Vue {
       .then((r) => r.data);
     const promDelay = new Promise((r) => setTimeout(r, delay));
 
-    console.log(promFirst, promSec);
-
     const [resFirst, resSec, resDelay] = await Promise.all([
       promFirst,
       promSec,
       promDelay,
     ]);
-    console.log(resFirst, resSec);
 
     this.firstEp = resFirst;
     this.secondEp = resSec;
+    this.firstEp.index = firstIndex;
+    this.secondEp.index = secondIndex;
+
+    this.$store.dispatch("updateCurrentComparisons", {
+      showId: this.id,
+      firstEp: this.firstEp.index,
+      secondEp: this.secondEp.index,
+    });
     return 0;
+  }
+
+  async chooseWinner(index: number) {
+    switch (index) {
+      case 0:
+        this.$store.dispatch("chooseComparisonWinner", this.firstEp.index);
+        break;
+      case 1:
+        this.$store.dispatch("chooseComparisonWinner", this.secondEp.index);
+        break;
+    }
+
+    const chosen = this.pickRandom();
+    console.log(this.comparisons);
+    if (!chosen) return 0;
+    return await this.setComparison(this.id, chosen[0], chosen[1]);
   }
 }
 </script>

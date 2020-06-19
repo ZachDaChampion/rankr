@@ -11,6 +11,12 @@ interface CachedData {
   data: any;
 }
 
+interface ComparisonAddress {
+  showId: string;
+  firstEp: number;
+  secondEp: number;
+}
+
 const comp: Record<string, any> = {};
 const cache: Record<string, CachedData> = {};
 
@@ -19,6 +25,11 @@ export default new Vuex.Store({
     searchTerm: "",
     searchResults: Array<any>(),
     comparisons: comp,
+    currentComparisons: {
+      showId: "",
+      firstEp: 0,
+      secondEp: 0,
+    } as ComparisonAddress,
     cache: cache,
   },
   mutations: {
@@ -30,6 +41,20 @@ export default new Vuex.Store({
     },
     updateComparisons(state, data: any) {
       state.comparisons[data.id] = data;
+    },
+    updateSingleComparison(state, data: [ComparisonAddress, number]) {
+      console.log("COMPARISONS", state.comparisons[data[0].showId].comparisons);
+      console.log("DATA", data[0].firstEp, data[0].secondEp);
+      state.comparisons[data[0].showId].comparisons[data[0].firstEp][
+        data[0].secondEp
+      ] = data[1];
+    },
+    updateCurrentComparisons(state, comparison: ComparisonAddress) {
+      state.currentComparisons = {
+        showId: comparison.showId,
+        firstEp: comparison.firstEp,
+        secondEp: comparison.secondEp,
+      };
     },
     updateCache(state, data: CachedData) {
       state.cache[data.name] = data;
@@ -46,13 +71,23 @@ export default new Vuex.Store({
       context.commit("getComparisons", id);
     },
     updateComparisons(context, data: any) {
-      const d: CachedData = {
-        name: data.name,
-        data: data.data,
-        expire: data.expire,
-        created: data.created || (data.expire ? Date.now() : undefined),
-      };
       context.commit("updateComparisons", data);
+    },
+    updateCurrentComparisons(context, data: ComparisonAddress) {
+      context.commit("updateCurrentComparisons", data);
+    },
+    chooseComparisonWinner(context, index: number) {
+      const val =
+        context.state.currentComparisons?.firstEp === index
+          ? 1
+          : context.state.currentComparisons?.secondEp === index
+          ? -1
+          : 0;
+
+      context.commit("updateSingleComparison", [
+        context.state.currentComparisons,
+        val,
+      ]);
     },
     async downloadComparisons(context, id) {
       const data: Record<string, any> = {};
@@ -60,13 +95,23 @@ export default new Vuex.Store({
       data.lookup = (
         await axios.get(`http://localhost:3000/tvdetails?id=${id}`)
       ).data;
-      data.comparisons = new Array<Array<number>>(data.lookup.length).fill(
-        new Array<number>(data.lookup.length).fill(0)
-      );
+      data.comparisons = [];
+      for (let i = 0; i < data.lookup.length; ++i) {
+        data.comparisons[i] = [];
+        for (let j = 0; j < data.lookup.length; ++j) {
+          data.comparisons[i][j] = 0;
+        }
+      }
       return await context.commit("updateComparisons", data);
     },
     updateCache(context, data: CachedData) {
-      context.commit("updateCache", data);
+      const d: CachedData = {
+        name: data.name,
+        data: data.data,
+        expire: data.expire,
+        created: data.created || (data.expire ? Date.now() : undefined),
+      };
+      context.commit("updateCache", d);
     },
   },
   getters: {
