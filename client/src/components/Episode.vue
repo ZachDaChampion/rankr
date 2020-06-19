@@ -23,7 +23,6 @@ export default class Episode extends Vue {
   public data!: any;
 
   public get imgLoaded() {
-    console.log("Ep", this.$refs);
     return (this.$refs.img as ImgComponent).imgLoaded;
   }
 }
