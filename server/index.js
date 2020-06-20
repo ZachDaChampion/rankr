@@ -81,17 +81,21 @@ app.get("/tvsearch", async (req, res) => {
   return await res.send(response);
 });
 
-app.get("/tvtitle", async (req, res) =>
+app.get("/tvtitle", async (req, res) => {
+  const data = (
+    await axios.get(`https://api.themoviedb.org/3/tv/${req.query.id}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+      },
+    })
+  ).data;
+
   res.send(
-    (
-      await axios.get(`https://api.themoviedb.org/3/tv/${req.query.id}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
-        },
-      })
-    ).data.name
-  )
-);
+    `${data.name} (${
+      data.first_air_date ? data.first_air_date.split("-")[0] : "Unknown"
+    })`
+  );
+});
 
 app.get("/tvdetails", async (req, res) => {
   const id = req.query.id;
