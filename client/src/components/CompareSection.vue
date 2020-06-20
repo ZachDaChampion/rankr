@@ -57,6 +57,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Episode from "@/components/Episode.vue";
 import axios from "axios";
 import ImgComponent from "./ImgComponent.vue";
+import { calculateRatings, rank } from "../stats";
 
 function delay(t: number) {
   return new Promise((r) => setTimeout(r, t));
@@ -96,21 +97,37 @@ export default class CompareSection extends Vue {
     );
   }
 
+  get rankings() {
+    return this.$store.getters.getRankings(this.id);
+  }
+
   async created() {
     if (!this.episodesDownloaded)
       await this.$store.dispatch("downloadComparisons", this.id);
     const chosen = this.pickRandom();
 
     if (!chosen) {
-      this.displayEps = false;
-      await delay(650);
-      this.finished = true;
-      await delay(300);
-      this.smallArea = true;
+      await this.finishComparing();
       return 0;
     }
 
     return await this.setComparison(this.id, chosen[0], chosen[1]);
+  }
+
+  async finishComparing() {
+    this.displayEps = false;
+    await delay(650);
+    this.finished = true;
+    await delay(300);
+    this.smallArea = true;
+  }
+
+  updateRankings() {
+    const ratings = calculateRatings(this.comparisons);
+    this.$store.dispatch("updateRankings", {
+      showId: this.id,
+      rankings: rank(ratings, this.lookup),
+    });
   }
 
   pickRandom() {
@@ -197,14 +214,12 @@ export default class CompareSection extends Vue {
         break;
     }
 
+    this.updateRankings();
+
     const chosen = this.pickRandom();
     console.log(this.comparisons);
     if (!chosen) {
-      this.displayEps = false;
-      await delay(650);
-      this.finished = true;
-      await delay(300);
-      this.smallArea = true;
+      await this.finishComparing();
       return 0;
     }
 
