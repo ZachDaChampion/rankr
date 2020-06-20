@@ -17,20 +17,18 @@ interface ComparisonAddress {
   secondEp: number;
 }
 
-const comp: Record<string, any> = {};
-const cache: Record<string, CachedData> = {};
-
 export default new Vuex.Store({
   state: {
     searchTerm: "",
     searchResults: Array<any>(),
-    comparisons: comp,
+    comparisons: {} as Record<string, any>,
     currentComparisons: {
       showId: "",
       firstEp: 0,
       secondEp: 0,
     } as ComparisonAddress,
-    cache: cache,
+    cache: {} as Record<string, CachedData>,
+    rankings: {} as Record<string, any>,
   },
   mutations: {
     updateSearchTerm(state, newTerm: string) {
@@ -58,6 +56,9 @@ export default new Vuex.Store({
     },
     updateCache(state, data: CachedData) {
       state.cache[data.name] = data;
+    },
+    updateRankings(state, rankings: { showId: string; rankings: Array<any> }) {
+      state.rankings[rankings.showId] = rankings.rankings;
     },
   },
   actions: {
@@ -113,6 +114,12 @@ export default new Vuex.Store({
       };
       context.commit("updateCache", d);
     },
+    updateRankings(
+      context,
+      rankings: { showId: string; rankings: Array<any> }
+    ) {
+      context.commit("updateRankings", rankings);
+    },
   },
   getters: {
     getComparisons: (state) => (id: string) => state.comparisons[id],
@@ -123,6 +130,7 @@ export default new Vuex.Store({
         return state.cache[name].data;
       return undefined;
     },
+    getRankings: (state) => (id: string) => state.rankings[id],
   },
   modules: {},
 });
