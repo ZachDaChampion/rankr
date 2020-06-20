@@ -1,40 +1,54 @@
 <template>
-  <div class="compare-section">
-    <transition name="slide">
-      <div
-        id="episodes"
-        v-show="
-          Object.keys(firstEp).length &&
-            Object.keys(secondEp).length &&
-            imagesLoaded
-        "
-      >
+  <div class="compare-section" :class="smallArea ? 'short' : ''">
+    <div id="episodes">
+      <transition :name="`slide-${selected === 0 ? 'up' : 'down'}`">
         <episode
           id="episode-first"
           ref="episodeFirst"
+          v-show="Object.keys(firstEp).length && displayEps && !finished"
           :data="firstEp"
           @click.native="chooseWinner(0)"
         />
-        <h2>OR</h2>
+      </transition>
+      <transition name="fade">
+        <h2
+          v-show="
+            Object.keys(firstEp).length &&
+              Object.keys(secondEp).length &&
+              imagesLoaded &&
+              displayEps &&
+              !finished
+          "
+        >
+          OR
+        </h2>
+      </transition>
+      <transition :name="`slide-${selected === 1 ? 'up' : 'down'}`">
         <episode
           id="episode-second"
           ref="episodeSecond"
+          v-show="Object.keys(secondEp).length && displayEps && !finished"
           :data="secondEp"
           @click.native="chooseWinner(1)"
         />
-      </div>
-    </transition>
+      </transition>
+    </div>
     <h2
       v-show="
         !(
           Object.keys(firstEp).length &&
           Object.keys(secondEp).length &&
           imagesLoaded
-        )
+        ) && !finished
       "
     >
       Loading episodes...
     </h2>
+    <transition name="fade">
+      <h2 v-show="finished">
+        All episodes have been compared!
+      </h2>
+    </transition>
   </div>
 </template>
 
@@ -44,12 +58,20 @@ import Episode from "@/components/Episode.vue";
 import axios from "axios";
 import ImgComponent from "./ImgComponent.vue";
 
+function delay(t: number) {
+  return new Promise((r) => setTimeout(r, t));
+}
+
 @Component({
   components: { Episode },
 })
 export default class CompareSection extends Vue {
   private firstEp: any = {};
   private secondEp: any = {};
+  private selected = -1;
+  private displayEps = true;
+  private finished = false;
+  private smallArea = false;
 
   get id() {
     return this.$route.query.id ? String(this.$route.query.id) : "";
@@ -79,7 +101,14 @@ export default class CompareSection extends Vue {
       await this.$store.dispatch("downloadComparisons", this.id);
     const chosen = this.pickRandom();
 
-    if (!chosen) return 0;
+    if (!chosen) {
+      this.displayEps = false;
+      await delay(650);
+      this.finished = true;
+      await delay(300);
+      this.smallArea = true;
+      return 0;
+    }
 
     return await this.setComparison(this.id, chosen[0], chosen[1]);
   }
@@ -87,8 +116,11 @@ export default class CompareSection extends Vue {
   pickRandom() {
     const secondOrig = Math.floor(Math.random() * this.lookup.length);
     const firstOrig = Math.floor(Math.random() * secondOrig);
+    console.log(firstOrig, secondOrig);
     let first = firstOrig;
     let second = secondOrig;
+    let prevF = first;
+    let prevS = second;
 
     while (first === second || this.comparisons[first][second]) {
       ++first;
@@ -101,7 +133,14 @@ export default class CompareSection extends Vue {
         second = 1;
       }
 
-      if (first === firstOrig && second === secondOrig) return null;
+      console.log(first, second);
+      if (
+        (first === prevF && second === prevS) ||
+        (first === firstOrig && second === secondOrig)
+      )
+        return null;
+      prevF = first;
+      prevS = second;
     }
 
     return [first, second];
@@ -111,7 +150,7 @@ export default class CompareSection extends Vue {
     showId: string,
     firstIndex: number,
     secondIndex: number,
-    delay = 0
+    delayTime = 0
   ) {
     const first = this.lookup[firstIndex];
     const second = this.lookup[secondIndex];
@@ -126,7 +165,7 @@ export default class CompareSection extends Vue {
         `http://localhost:3000/episode?show=${showId}&s=${second.season}&e=${second.number}&imgsize=w780`
       )
       .then((r) => r.data);
-    const promDelay = new Promise((r) => setTimeout(r, delay));
+    const promDelay = delay(delayTime);
 
     const [resFirst, resSec, resDelay] = await Promise.all([
       promFirst,
@@ -148,6 +187,7 @@ export default class CompareSection extends Vue {
   }
 
   async chooseWinner(index: number) {
+    this.selected = index;
     switch (index) {
       case 0:
         this.$store.dispatch("chooseComparisonWinner", this.firstEp.index);
@@ -159,8 +199,19 @@ export default class CompareSection extends Vue {
 
     const chosen = this.pickRandom();
     console.log(this.comparisons);
-    if (!chosen) return 0;
-    return await this.setComparison(this.id, chosen[0], chosen[1]);
+    if (!chosen) {
+      this.displayEps = false;
+      await delay(650);
+      this.finished = true;
+      await delay(300);
+      this.smallArea = true;
+      return 0;
+    }
+
+    this.displayEps = false;
+    await this.setComparison(this.id, chosen[0], chosen[1], 600);
+    this.displayEps = true;
+    return 0;
   }
 }
 </script>
@@ -169,6 +220,12 @@ export default class CompareSection extends Vue {
 .compare-section {
   width: 100%;
   min-height: calc(100vh - 3em - 20vh);
+  transition: all 1200ms cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.short {
+  padding-bottom: 96px;
+  min-height: 0;
 }
 
 #episodes {
@@ -181,15 +238,40 @@ h2 {
   margin: auto 0;
 }
 
-.slide-enter-active,
-.slide-leave-active,
-.slide-move {
-  transition: opacity 500ms cubic-bezier(0.075, 0.82, 0.165, 1),
-    transform 750ms cubic-bezier(0.075, 0.82, 0.165, 1);
+.slide-up-enter-active,
+.slide-up-leave-active,
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: transform 500ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 500ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.slide-enter {
-  opacity: 0;
+.slide-up-enter,
+.slide-down-enter {
   transform: translateY(50%);
+  opacity: 0;
+}
+
+.slide-up-leave-to {
+  transform: translateY(-50%);
+  opacity: 0;
+}
+
+.slide-down-leave-to {
+  transform: translateY(5%);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 500ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
