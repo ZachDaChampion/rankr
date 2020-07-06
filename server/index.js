@@ -1,9 +1,18 @@
 const express = require("express");
-const app = express();
-const port = 3000;
+const cors = require("cors");
 const axios = require("axios");
 const url = require("url");
 require("dotenv").config();
+const app = express();
+const port = 3000;
+
+const corsOptions = {
+  origin: "localhost:3000",
+  optionsSuccessStatus: 200,
+};
+
+// app.use(cors(corsOptions));
+app.use(cors());
 
 async function getImgPath(size, path) {
   return (
