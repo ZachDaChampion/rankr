@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import VuexPeristence from "vuex-persist";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -16,6 +17,13 @@ interface ComparisonAddress {
   firstEp: number;
   secondEp: number;
 }
+
+const vuexLocal = new VuexPeristence({
+  reducer: (state: Record<any, any>) => ({
+    comparisons: state.comparisons,
+    rankings: state.rankings,
+  }),
+});
 
 export default new Vuex.Store({
   state: {
@@ -67,9 +75,6 @@ export default new Vuex.Store({
     },
     updateSearchResults(context, newResults: Array<any>) {
       context.commit("updateSearchResults", newResults);
-    },
-    getComparisons(context, id: string) {
-      context.commit("getComparisons", id);
     },
     updateComparisons(context, data: any) {
       context.commit("updateComparisons", data);
@@ -133,4 +138,5 @@ export default new Vuex.Store({
     getRankings: (state) => (id: string) => state.rankings[id],
   },
   modules: {},
+  plugins: [vuexLocal.plugin],
 });
