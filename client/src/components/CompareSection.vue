@@ -239,7 +239,7 @@ export default class CompareSection extends Vue {
 }
 
 .short {
-  padding-bottom: 96px;
+  padding-bottom: 64px;
   min-height: 0;
 }
 

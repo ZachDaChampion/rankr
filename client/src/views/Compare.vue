@@ -2,18 +2,19 @@
   <div class="compare">
     <h1>{{ showTitle }}</h1>
     <compare-section />
-    <div class="ranking-details"></div>
+    <ranking-section id="ranking-section" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import CompareSection from "@/components/CompareSection.vue";
+import RankingSection from "@/components/RankingSection.vue";
 import axios from "axios";
 
 export default Vue.extend({
   name: "Compare",
-  components: { CompareSection },
+  components: { CompareSection, RankingSection },
   data: () => {
     return {
       showTitle: "",
@@ -47,10 +48,9 @@ h2 {
   margin-bottom: 64px;
 }
 
-.ranking-details {
-  width: 100%;
-  height: 100vh;
+#ranking-section {
   background-color: #21222c;
+  padding: 24px 10% 0 10%;
   /* background-color: #282a36; */
 }
 </style>
