@@ -8,7 +8,7 @@ require("dotenv").config();
 const app = express();
 const port = 3000;
 
-app.use(serveStatic(path.join(__dirname, "/../client/dist")));
+app.use(serveStatic(path.join(__dirname, "/client/dist")));
 async function getImgPath(size, path) {
   return (
     (
@@ -187,7 +187,7 @@ app.get("/episode", async (req, res) => {
 });
 
 app.get(/.*/, function (req, res) {
-  res.sendFile(path.join(__dirname, "/../client/dist/index.html"));
+  res.sendFile(path.join(__dirname, "/client/dist/index.html"));
 });
 
 app.listen(process.env.PORT || port);
