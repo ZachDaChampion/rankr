@@ -139,17 +139,20 @@ export default class RankedEpisode extends Vue {
 h1 {
   margin: 0 16px;
   font-family: "Hind Madurai", sans-serif;
+  text-align: start;
 }
 
 h2 {
   margin: 0;
   font-size: 1em;
   font-family: "Hind Madurai", sans-serif;
+  text-align: start;
 }
 
 p {
   margin: 0;
   margin-left: 16px;
   color: #ddcbf7bb;
+  text-align: start;
 }
 </style>
