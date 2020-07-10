@@ -1,5 +1,6 @@
 <template>
   <div class="compare">
+    <div id="progress" :style="{ width: `${progress * 100}%` }" />
     <h1>{{ showTitle }}</h1>
     <compare-section />
     <ranking-section id="ranking-section" :showId="this.$route.query.id" />
@@ -20,6 +21,12 @@ export default Vue.extend({
       showTitle: "",
     };
   },
+  computed: {
+    progress: function() {
+      console.log("ID", this.$route.query.id);
+      return this.$store.getters.getProgress(String(this.$route.query.id));
+    },
+  },
   created: async function() {
     return (this.showTitle =
       this.$store.getters.getCached(this.$route.query.id) ||
@@ -35,6 +42,16 @@ export default Vue.extend({
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@500&family=Varela+Round&display=swap");
 
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background-color: #bd93f9;
+  z-index: 1;
+  transition: width 200ms cubic-bezier(0.075, 0.82, 0.165, 1)
+}
+
 h1 {
   font-family: "Hind Madurai", sans-serif;
   margin: 0;
@@ -49,8 +66,10 @@ h2 {
 }
 
 #ranking-section {
+  position: relative;
   background-color: #21222c;
   padding: 24px 10% 0 10%;
+  z-index: 2;
   /* background-color: #282a36; */
 }
 </style>

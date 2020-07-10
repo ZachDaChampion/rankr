@@ -54,6 +54,11 @@ export default new Vuex.Store({
       state.comparisons[data[0].showId].comparisons[data[0].firstEp][
         data[0].secondEp
       ] = data[1];
+      Vue.set(
+        state.comparisons[data[0].showId],
+        "comparisonCount",
+        state.comparisons[data[0].showId].comparisonCount + 1
+      );
     },
     updateCurrentComparisons(state, comparison: ComparisonAddress) {
       state.currentComparisons = {
@@ -98,6 +103,7 @@ export default new Vuex.Store({
     async downloadComparisons(context, id) {
       const data: Record<string, any> = {};
       data.id = id;
+      data.comparisonCount = 0;
       data.lookup = (
         await axios.get(`http://localhost:3000/tvdetails?id=${id}`)
       ).data;
@@ -136,6 +142,15 @@ export default new Vuex.Store({
       return undefined;
     },
     getRankings: (state) => (id: string) => state.rankings[id],
+    getProgress: (state) => (id: string) => {
+      return state.comparisons[id] === undefined
+        ? 0
+        : state.comparisons[id].comparisonCount /
+            ((state.comparisons[id].lookup.length *
+              state.comparisons[id].lookup.length -
+              state.comparisons[id].lookup.length) /
+              2);
+    },
   },
   modules: {},
   plugins: [vuexLocal.plugin],
