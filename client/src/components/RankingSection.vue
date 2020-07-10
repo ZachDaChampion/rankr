@@ -2,7 +2,7 @@
   <div>
     <ranked-episode
       v-for="(ep, index) in rankings"
-      :key="index"
+      :key="`${ep.season}-${ep.number}-${ep.rank}`"
       :index="index"
       :show-id="showId"
       :season="ep.season"
