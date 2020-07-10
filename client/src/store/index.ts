@@ -63,10 +63,10 @@ export default new Vuex.Store({
       };
     },
     updateCache(state, data: CachedData) {
-      state.cache[data.name] = data;
+      Vue.set(state.cache, data.name, data);
     },
     updateRankings(state, rankings: { showId: string; rankings: Array<any> }) {
-      state.rankings[rankings.showId] = rankings.rankings;
+      Vue.set(state.rankings, rankings.showId, rankings.rankings);
     },
   },
   actions: {
@@ -105,7 +105,7 @@ export default new Vuex.Store({
       for (let i = 0; i < data.lookup.length; ++i) {
         data.comparisons[i] = [];
         for (let j = 0; j < data.lookup.length; ++j) {
-          data.comparisons[i][j] = 0;
+          data.comparisons[i][j] = null;
         }
       }
       return await context.commit("updateComparisons", data);

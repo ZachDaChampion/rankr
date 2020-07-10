@@ -2,7 +2,7 @@
   <div class="compare">
     <h1>{{ showTitle }}</h1>
     <compare-section />
-    <ranking-section id="ranking-section" />
+    <ranking-section id="ranking-section" :showId="this.$route.query.id" />
   </div>
 </template>
 

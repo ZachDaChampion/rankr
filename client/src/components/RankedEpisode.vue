@@ -1,36 +1,74 @@
 <template>
-  <div class="ranked-episode">
+  <div class="ranked-episode" v-if="data">
     <div id="main-info">
       <div id="img-area">
-        <img-component
-          id="img"
-          ref="img"
-          src="https://knowpathology.com.au/app/uploads/2018/07/Happy-Test-Screen-01.png"
-        />
-        <div id="rank">1</div>
+        <img-component id="img" ref="img" :src="data.img" />
+        <div id="rank">{{ rank }}</div>
       </div>
       <div id="description">
         <div id="title-section">
-          <h1>Title</h1>
-          <h2>S1 E2 · 2020-05-08</h2>
+          <h1>{{ data.title }}</h1>
+          <h2>S{{ data.season }} E{{ data.episode }} · {{ data.date }}</h2>
         </div>
-        <p>This is an example description for an episode.</p>
+        <p>{{ data.overview }}</p>
+        <!-- <h3 id="rating">Rating: {{ rating }}</h3> -->
       </div>
     </div>
-    <!-- <h1>#1</h1> -->
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import ImgComponent from "@/components/ImgComponent.vue";
+import axios from "axios";
 
 @Component({
   components: { ImgComponent },
 })
 export default class RankedEpisode extends Vue {
+  @Prop({ required: true })
+  public showId!: string;
+
+  @Prop({ required: false })
+  public season!: number;
+
+  @Prop({ required: false })
+  public number!: number;
+
+  @Prop({ required: false })
+  public rank!: number;
+
+  @Prop({ required: false })
+  public rating!: number;
+
+  @Prop({ required: false })
+  public index!: number;
+
+  public data: any = {};
+
   public get imgLoaded() {
     return (this.$refs.img as ImgComponent).imgLoaded;
+  }
+
+  get lookup() {
+    return this.$store.getters.getComparisons(this.showId).lookup;
+  }
+
+  created() {
+    if (
+      this.$store.getters.getCached(
+        `epData-${this.showId}-${this.season}-${this.number}`
+      )
+    )
+      this.data = this.$store.getters.getCached(
+        `epData-${this.showId}-${this.season}-${this.number}`
+      );
+    else
+      axios
+        .get(
+          `http://localhost:3000/episode?show=${this.showId}&s=${this.season}&e=${this.number}&imgsize=w500`
+        )
+        .then((res) => (this.data = res.data));
   }
 }
 </script>
@@ -77,6 +115,13 @@ export default class RankedEpisode extends Vue {
   height: 1.5em;
   font-family: "Hind Madurai", sans-serif;
   color: #bd93f9;
+}
+
+#rating {
+  margin: 0;
+  font-size: 0.8em;
+  margin-left: 16px;
+  color: #ddcbf7bb;
 }
 
 #description {
