@@ -23,7 +23,6 @@ export default Vue.extend({
   },
   computed: {
     progress: function() {
-      console.log("ID", this.$route.query.id);
       return this.$store.getters.getProgress(String(this.$route.query.id));
     },
   },

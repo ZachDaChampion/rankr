@@ -104,6 +104,7 @@ export default class CompareSection extends Vue {
   async created() {
     if (!this.episodesDownloaded)
       await this.$store.dispatch("downloadComparisons", this.id);
+    this.$store.getters.getProgress(this.id);
     const chosen = this.pickRandom();
 
     if (!chosen) {

@@ -2,18 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const url = require("url");
+const path = require("path");
+const serveStatic = require("serve-static");
 require("dotenv").config();
 const app = express();
 const port = 3000;
 
-const corsOptions = {
-  origin: "localhost:3000",
-  optionsSuccessStatus: 200,
-};
-
-// app.use(cors(corsOptions));
-app.use(cors());
-
+app.use(serveStatic(path.join(__dirname, "/../client/dist")));
 async function getImgPath(size, path) {
   return (
     (
@@ -28,7 +23,7 @@ async function getImgPath(size, path) {
   );
 }
 
-app.get("/", (req, res) => res.send("hello world"));
+// app.get("/", (req, res) => res.send("hello world"));
 
 app.get("/imgpath", async (req, res) =>
   res.send(await getImgPath(req.query.size, req.query.path))
@@ -189,6 +184,10 @@ app.get("/episode", async (req, res) => {
 
   console.log("EPISODE", result);
   return res.send(result);
+});
+
+app.get(/.*/, function (req, res) {
+  res.sendFile(path.join(__dirname, "/../client/dist/index.html"));
 });
 
 app.listen(port);

@@ -46,7 +46,7 @@ export default new Vuex.Store({
       state.searchResults = newResults;
     },
     updateComparisons(state, data: any) {
-      state.comparisons[data.id] = data;
+      Vue.set(state.comparisons, data.id, data);
     },
     updateSingleComparison(state, data: [ComparisonAddress, number]) {
       console.log("COMPARISONS", state.comparisons[data[0].showId].comparisons);
@@ -142,15 +142,14 @@ export default new Vuex.Store({
       return undefined;
     },
     getRankings: (state) => (id: string) => state.rankings[id],
-    getProgress: (state) => (id: string) => {
-      return state.comparisons[id] === undefined
+    getProgress: (state) => (id: string) =>
+      state.comparisons[id] === undefined
         ? 0
         : state.comparisons[id].comparisonCount /
-            ((state.comparisons[id].lookup.length *
-              state.comparisons[id].lookup.length -
-              state.comparisons[id].lookup.length) /
-              2);
-    },
+          ((state.comparisons[id].lookup.length *
+            state.comparisons[id].lookup.length -
+            state.comparisons[id].lookup.length) /
+            2),
   },
   modules: {},
   plugins: [vuexLocal.plugin],
