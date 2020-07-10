@@ -18,8 +18,8 @@ export default {
   components: {
     TitleArea,
     SearchBox,
-    PosterGrid,
-  },
+    PosterGrid
+  }
 };
 </script>
 

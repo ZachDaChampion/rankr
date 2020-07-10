@@ -23,7 +23,7 @@ import ImgComponent from "@/components/ImgComponent.vue";
 import axios from "axios";
 
 @Component({
-  components: { ImgComponent },
+  components: { ImgComponent }
 })
 export default class RankedEpisode extends Vue {
   @Prop({ required: true })
@@ -68,7 +68,7 @@ export default class RankedEpisode extends Vue {
         .get(
           `http://localhost:3000/episode?show=${this.showId}&s=${this.season}&e=${this.number}&imgsize=w500`
         )
-        .then((res) => (this.data = res.data));
+        .then(res => (this.data = res.data));
   }
 }
 </script>

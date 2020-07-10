@@ -60,11 +60,11 @@ import ImgComponent from "./ImgComponent.vue";
 import { calculateRatings, rank } from "../stats";
 
 function delay(t: number) {
-  return new Promise((r) => setTimeout(r, t));
+  return new Promise(r => setTimeout(r, t));
 }
 
 @Component({
-  components: { Episode },
+  components: { Episode }
 })
 export default class CompareSection extends Vue {
   private firstEp: any = {};
@@ -127,7 +127,7 @@ export default class CompareSection extends Vue {
     const ratings = calculateRatings(this.comparisons);
     this.$store.dispatch("updateRankings", {
       showId: this.id,
-      rankings: rank(ratings, this.lookup),
+      rankings: rank(ratings, this.lookup)
     });
   }
 
@@ -177,18 +177,18 @@ export default class CompareSection extends Vue {
       .get(
         `http://localhost:3000/episode?show=${showId}&s=${first.season}&e=${first.number}&imgsize=w780`
       )
-      .then((r) => r.data);
+      .then(r => r.data);
     const promSec = axios
       .get(
         `http://localhost:3000/episode?show=${showId}&s=${second.season}&e=${second.number}&imgsize=w780`
       )
-      .then((r) => r.data);
+      .then(r => r.data);
     const promDelay = delay(delayTime);
 
     const [resFirst, resSec, resDelay] = await Promise.all([
       promFirst,
       promSec,
-      promDelay,
+      promDelay
     ]);
 
     this.firstEp = resFirst;
@@ -199,7 +199,7 @@ export default class CompareSection extends Vue {
     this.$store.dispatch("updateCurrentComparisons", {
       showId: this.id,
       firstEp: this.firstEp.index,
-      secondEp: this.secondEp.index,
+      secondEp: this.secondEp.index
     });
     return 0;
   }

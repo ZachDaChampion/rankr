@@ -16,7 +16,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import ImgComponent from "@/components/ImgComponent.vue";
 
 @Component({
-  components: { ImgComponent },
+  components: { ImgComponent }
 })
 export default class Episode extends Vue {
   @Prop({ required: true })

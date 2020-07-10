@@ -41,7 +41,7 @@ export default class PosterPreview extends Vue {
   navigate() {
     this.$store.dispatch("updateCache", {
       name: this.id.toString(),
-      data: this.title,
+      data: this.title
     });
     this.$router.push({ path: "compare", query: { id: this.id.toString() } });
   }

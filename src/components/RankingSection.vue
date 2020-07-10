@@ -18,7 +18,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import RankedEpisode from "@/components/RankedEpisode.vue";
 
 @Component({
-  components: { RankedEpisode },
+  components: { RankedEpisode }
 })
 export default class RankingSection extends Vue {
   @Prop({ required: true })

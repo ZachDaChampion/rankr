@@ -18,13 +18,13 @@ export default Vue.extend({
   components: { CompareSection, RankingSection },
   data: () => {
     return {
-      showTitle: "",
+      showTitle: ""
     };
   },
   computed: {
     progress: function() {
       return this.$store.getters.getProgress(String(this.$route.query.id));
-    },
+    }
   },
   created: async function() {
     return (this.showTitle =
@@ -34,7 +34,7 @@ export default Vue.extend({
           `http://localhost:3000/tvtitle?id=${this.$route.query.id}`
         )
       ).data);
-  },
+  }
 });
 </script>
 
@@ -48,7 +48,7 @@ export default Vue.extend({
   height: 4px;
   background-color: #bd93f9;
   z-index: 1;
-  transition: width 200ms cubic-bezier(0.075, 0.82, 0.165, 1)
+  transition: width 200ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 h1 {

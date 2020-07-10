@@ -8,13 +8,13 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Selector",
-    component: Selector,
+    component: Selector
   },
   {
     path: "/compare",
     name: "Compare",
-    component: () => import("../views/Compare.vue"),
-  },
+    component: () => import("../views/Compare.vue")
+  }
 ];
 
 const router = new VueRouter({
@@ -23,7 +23,7 @@ const router = new VueRouter({
   routes,
   scrollBehavior() {
     return { x: 0, y: 0 };
-  },
+  }
 });
 
 export default router;

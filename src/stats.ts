@@ -29,7 +29,7 @@ export function calculateRatings(comparisons: Array<Array<number>>) {
 export function rank(ratings: Array<Rating>, lookup: Array<any>) {
   const sorted = Array.prototype.slice
     .call(ratings)
-    .filter((val) => val.rated)
+    .filter(val => val.rated)
     .sort((a, b) => b.rating - a.rating);
 
   const result: Array<any> = [];
@@ -39,7 +39,10 @@ export function rank(ratings: Array<Rating>, lookup: Array<any>) {
       season: lookup[val.index].season,
       number: lookup[val.index].number,
       rating: val.rating,
-      rank: i > 0 && val.rating === sorted[i - 1].rating ? result[i - 1].rank : i + 1,
+      rank:
+        i > 0 && val.rating === sorted[i - 1].rating
+          ? result[i - 1].rank
+          : i + 1
     });
   }
 

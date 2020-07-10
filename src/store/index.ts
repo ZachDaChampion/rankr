@@ -21,8 +21,8 @@ interface ComparisonAddress {
 const vuexLocal = new VuexPeristence({
   reducer: (state: Record<any, any>) => ({
     comparisons: state.comparisons,
-    rankings: state.rankings,
-  }),
+    rankings: state.rankings
+  })
 });
 
 export default new Vuex.Store({
@@ -33,10 +33,10 @@ export default new Vuex.Store({
     currentComparisons: {
       showId: "",
       firstEp: 0,
-      secondEp: 0,
+      secondEp: 0
     } as ComparisonAddress,
     cache: {} as Record<string, CachedData>,
-    rankings: {} as Record<string, any>,
+    rankings: {} as Record<string, any>
   },
   mutations: {
     updateSearchTerm(state, newTerm: string) {
@@ -64,7 +64,7 @@ export default new Vuex.Store({
       state.currentComparisons = {
         showId: comparison.showId,
         firstEp: comparison.firstEp,
-        secondEp: comparison.secondEp,
+        secondEp: comparison.secondEp
       };
     },
     updateCache(state, data: CachedData) {
@@ -72,7 +72,7 @@ export default new Vuex.Store({
     },
     updateRankings(state, rankings: { showId: string; rankings: Array<any> }) {
       Vue.set(state.rankings, rankings.showId, rankings.rankings);
-    },
+    }
   },
   actions: {
     updateSearchTerm(context, newTerm: string) {
@@ -97,7 +97,7 @@ export default new Vuex.Store({
 
       context.commit("updateSingleComparison", [
         context.state.currentComparisons,
-        val,
+        val
       ]);
     },
     async downloadComparisons(context, id) {
@@ -121,7 +121,7 @@ export default new Vuex.Store({
         name: data.name,
         data: data.data,
         expire: data.expire,
-        created: data.created || (data.expire ? Date.now() : undefined),
+        created: data.created || (data.expire ? Date.now() : undefined)
       };
       context.commit("updateCache", d);
     },
@@ -130,27 +130,27 @@ export default new Vuex.Store({
       rankings: { showId: string; rankings: Array<any> }
     ) {
       context.commit("updateRankings", rankings);
-    },
+    }
   },
   getters: {
-    getComparisons: (state) => (id: string) => state.comparisons[id],
-    getCached: (state) => (name: string) => {
+    getComparisons: state => (id: string) => state.comparisons[id],
+    getCached: state => (name: string) => {
       if (!state.cache[name]) return undefined;
       if (!state.cache[name].expire) return state.cache[name].data;
       if (Date.now() - state.cache[name].created! < state.cache[name].expire!)
         return state.cache[name].data;
       return undefined;
     },
-    getRankings: (state) => (id: string) => state.rankings[id],
-    getProgress: (state) => (id: string) =>
+    getRankings: state => (id: string) => state.rankings[id],
+    getProgress: state => (id: string) =>
       state.comparisons[id] === undefined
         ? 0
         : state.comparisons[id].comparisonCount /
           ((state.comparisons[id].lookup.length *
             state.comparisons[id].lookup.length -
             state.comparisons[id].lookup.length) /
-            2),
+            2)
   },
   modules: {},
-  plugins: [vuexLocal.plugin],
+  plugins: [vuexLocal.plugin]
 });

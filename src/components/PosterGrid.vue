@@ -20,7 +20,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import PosterPreview from "@/components/PosterPreview.vue";
 
 @Component({
-  components: { PosterPreview },
+  components: { PosterPreview }
 })
 export default class PosterGrid extends Vue {
   get posters(): Array<any> {
