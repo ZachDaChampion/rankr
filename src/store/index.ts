@@ -100,7 +100,7 @@ export default new Vuex.Store({
         val
       ]);
     },
-    async downloadComparisons(context, raw: {id: string, path: string}) {
+    async downloadComparisons(context, raw: { id: string; path: string }) {
       const data: Record<string, any> = {};
       data.id = raw.id;
       data.comparisonCount = 0;
