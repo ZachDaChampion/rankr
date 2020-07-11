@@ -100,12 +100,12 @@ export default new Vuex.Store({
         val
       ]);
     },
-    async downloadComparisons(context, id) {
+    async downloadComparisons(context, raw: {id: string, path: string}) {
       const data: Record<string, any> = {};
-      data.id = id;
+      data.id = raw.id;
       data.comparisonCount = 0;
       data.lookup = (
-        await axios.get(`http://localhost:3000/tvdetails?id=${id}`)
+        await axios.get(`${raw.path}/tvdetails?id=${raw.id}`)
       ).data;
       data.comparisons = [];
       for (let i = 0; i < data.lookup.length; ++i) {

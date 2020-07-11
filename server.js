@@ -1,21 +1,26 @@
 const express = require("express");
-const cors = require("cors");
+const history = require("connect-history-api-fallback");
 const axios = require("axios");
 const url = require("url");
 const path = require("path");
 const serveStatic = require("serve-static");
 require("dotenv").config();
+
 const app = express();
 const port = 3000;
+const staticFileMiddlewear = express.static(path.join(__dirname, "/dist"));
 
-app.use(serveStatic(path.join(__dirname, "/dist")));
+app.use(staticFileMiddlewear);
+app.use(history({ disableDotRule: true, verbose: true }));
+app.use(staticFileMiddlewear);
+
 async function getImgPath(size, path) {
   return (
     (
       await axios.get("https://api.themoviedb.org/3/configuration", {
         headers: {
-          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-        }
+          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+        },
       })
     ).data.images.secure_base_url +
     (size || "original") +
@@ -36,8 +41,8 @@ app.get("/placeholderposter", (req, res) => {
     dotfiles: "deny",
     headers: {
       "x-timestamp": Date.now(),
-      "x-sent": true
-    }
+      "x-sent": true,
+    },
   });
 });
 
@@ -48,8 +53,8 @@ app.get("/placeholderstill", (req, res) => {
     dotfiles: "deny",
     headers: {
       "x-timestamp": Date.now(),
-      "x-sent": true
-    }
+      "x-sent": true,
+    },
   });
 });
 
@@ -59,27 +64,27 @@ app.get("/tvsearch", async (req, res) => {
     `https://api.themoviedb.org/3/search/tv?query=${req.query.search}`,
     {
       headers: {
-        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-      }
+        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+      },
     }
   );
 
   const response = await Promise.all(
-    result.data.results.map(async val => {
+    result.data.results.map(async (val) => {
       return {
         poster_path: val.poster_path
           ? await getImgPath("w342", val.poster_path)
           : url.format({
               protocol: req.protocol,
               host: req.get("host"),
-              pathname: "/placeholderposter"
+              pathname: "/placeholderposter",
             }),
         name: val.name,
         year: val.first_air_date ? val.first_air_date.split("-")[0] : "Unknown",
-        id: val.id
+        id: val.id,
       };
     })
-  ).then(completed => completed);
+  ).then((completed) => completed);
 
   console.log("result", response);
   return await res.send(response);
@@ -89,8 +94,8 @@ app.get("/tvtitle", async (req, res) => {
   const data = (
     await axios.get(`https://api.themoviedb.org/3/tv/${req.query.id}`, {
       headers: {
-        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-      }
+        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+      },
     })
   ).data;
 
@@ -109,8 +114,8 @@ app.get("/tvdetails", async (req, res) => {
   const tvDetails = (
     await axios.get(`https://api.themoviedb.org/3/tv/${id}`, {
       headers: {
-        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-      }
+        Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+      },
     })
   ).data;
   console.log("DETAILS", tvDetails);
@@ -126,20 +131,20 @@ app.get("/tvdetails", async (req, res) => {
       axios
         .get(`https://api.themoviedb.org/3/tv/${id}/season/${i}`, {
           headers: {
-            Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-          }
+            Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+          },
         })
-        .then(result => {
+        .then((result) => {
           episodes = episodes.concat(
-            result.data.episodes.map(episode => {
+            result.data.episodes.map((episode) => {
               return {
                 season: i,
-                number: episode.episode_number
+                number: episode.episode_number,
               };
             })
           );
         })
-        .catch(err => console.error(err))
+        .catch((err) => console.error(err))
     );
   }
   await Promise.all(seasonPromises);
@@ -158,8 +163,8 @@ app.get("/episode", async (req, res) => {
       `https://api.themoviedb.org/3/tv/${showId}/season/${seasonNum}/episode/${episodeNum}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`
-        }
+          Authorization: `Bearer ${process.env.THEMOVIEDB_TOKEN}`,
+        },
       }
     )
   ).data;
@@ -178,16 +183,16 @@ app.get("/episode", async (req, res) => {
       : url.format({
           protocol: req.protocol,
           host: req.get("host"),
-          pathname: "/placeholderstill"
-        })
+          pathname: "/placeholderstill",
+        }),
   };
 
   console.log("EPISODE", result);
   return res.send(result);
 });
 
-app.get(/.*/, function(req, res) {
-  res.sendFile(path.join(__dirname, "/dist/index.html"));
-});
+// app.get(/.*/, function(req, res) {
+//   res.sendFile(path.join(__dirname, "/dist/index.html"));
+// });
 
 app.listen(process.env.PORT || port);

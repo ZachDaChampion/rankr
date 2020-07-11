@@ -9,7 +9,7 @@
         minWidth:
           msg.length > 15
             ? 'min(calc(100vw - 256px), 1024px)'
-            : 'min(calc(100vw - 256px), 420px)'
+            : 'min(calc(100vw - 256px), 420px)',
       }"
     />
   </div>
@@ -27,14 +27,22 @@ export default class SearchBox extends Vue {
 
   refreshSearchResults(data: Array<any>): void {
     console.log("DATA", data);
-    const mappedData = data.map(val => {
+    const mappedData = data.map((val) => {
       return {
         id: val.id,
         title: `${val.name} (${val.year})`,
-        link: val.poster_path
+        link: val.poster_path,
       };
     });
     this.$store.dispatch("updateSearchResults", mappedData);
+  }
+
+  updateResults(value: string) {
+    this.$store.dispatch("updateSearchTerm", value);
+    if (value.trim())
+      axios
+        .get(`${process.env.VUE_APP_DOMAIN}/tvsearch?search=${value}`)
+        .then((result) => this.refreshSearchResults(result.data));
   }
 
   @Prop({ required: true })
@@ -44,13 +52,10 @@ export default class SearchBox extends Vue {
   public debounceTime!: number;
 
   @Watch("msg")
-  onPropertyChanged = debounce((value: string) => {
-    this.$store.dispatch("updateSearchTerm", value);
-    if (value.trim())
-      axios
-        .get(`http://localhost:3000/tvsearch?search=${value}`)
-        .then(result => this.refreshSearchResults(result.data));
-  }, this.debounceTime);
+  onPropertyChanged = debounce(
+    (value: string) => this.updateResults(value),
+    this.debounceTime
+  );
 }
 </script>
 
