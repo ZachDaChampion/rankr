@@ -10,13 +10,13 @@
   },
   "dependencies": {
     "@types/debounce": "^1.2.0",
-    "axios": "^0.21.2",
+    "axios": "^0.19.2",
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.4",
     "cors": "^2.8.5",
     "debounce": "^1.2.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.3",
+    "express": "^4.17.1",
     "path": "^0.12.7",
     "serve-static": "^1.14.1",
     "vue": "^2.6.11",
@@ -42,7 +42,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
-    "typescript": "~4.4.4",
+    "typescript": "~3.8.3",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
