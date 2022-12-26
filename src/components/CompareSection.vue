@@ -105,7 +105,7 @@ export default class CompareSection extends Vue {
     if (!this.episodesDownloaded)
       await this.$store.dispatch("downloadComparisons", {
         id: this.id,
-        path: process.env.VUE_APP_DOMAIN,
+        path: window.location.hostname,
       });
     this.$store.getters.getProgress(this.id);
     const chosen = this.pickRandom();
@@ -178,12 +178,12 @@ export default class CompareSection extends Vue {
 
     const promFirst = axios
       .get(
-        `${process.env.VUE_APP_DOMAIN}/episode?show=${showId}&s=${first.season}&e=${first.number}&imgsize=w780`
+        `${window.location.hostname}/episode?show=${showId}&s=${first.season}&e=${first.number}&imgsize=w780`
       )
       .then((r) => r.data);
     const promSec = axios
       .get(
-        `${process.env.VUE_APP_DOMAIN}/episode?show=${showId}&s=${second.season}&e=${second.number}&imgsize=w780`
+        `${window.location.hostname}/episode?show=${showId}&s=${second.season}&e=${second.number}&imgsize=w780`
       )
       .then((r) => r.data);
     const promDelay = delay(delayTime);

@@ -66,7 +66,7 @@ export default class RankedEpisode extends Vue {
     else
       axios
         .get(
-          `${process.env.VUE_APP_DOMAIN}/episode?show=${this.showId}&s=${this.season}&e=${this.number}&imgsize=w500`
+          `${window.location.hostname}/episode?show=${this.showId}&s=${this.season}&e=${this.number}&imgsize=w500`
         )
         .then(res => (this.data = res.data));
   }

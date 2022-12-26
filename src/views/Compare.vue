@@ -31,7 +31,7 @@ export default Vue.extend({
       this.$store.getters.getCached(this.$route.query.id) ||
       (
         await axios.get(
-          `${process.env.VUE_APP_DOMAIN}/tvtitle?id=${this.$route.query.id}`
+          `${window.location.hostname}/tvtitle?id=${this.$route.query.id}`
         )
       ).data);
   }

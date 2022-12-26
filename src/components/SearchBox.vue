@@ -41,7 +41,7 @@ export default class SearchBox extends Vue {
     this.$store.dispatch("updateSearchTerm", value);
     if (value.trim())
       axios
-        .get(`${process.env.VUE_APP_DOMAIN}/tvsearch?search=${value}`)
+        .get(`${window.location.hostname}/tvsearch?search=${value}`)
         .then((result) => this.refreshSearchResults(result.data));
   }
 
