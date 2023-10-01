@@ -9,7 +9,7 @@
         minWidth:
           msg.length > 15
             ? 'min(calc(100vw - 256px), 1024px)'
-            : 'min(calc(100vw - 256px), 420px)',
+            : 'min(calc(100vw - 256px), 420px)'
       }"
     />
   </div>
@@ -27,11 +27,11 @@ export default class SearchBox extends Vue {
 
   refreshSearchResults(data: Array<any>): void {
     console.log("DATA", data);
-    const mappedData = data.map((val) => {
+    const mappedData = data.map(val => {
       return {
         id: val.id,
         title: `${val.name} (${val.year})`,
-        link: val.poster_path,
+        link: val.poster_path
       };
     });
     this.$store.dispatch("updateSearchResults", mappedData);
@@ -41,8 +41,8 @@ export default class SearchBox extends Vue {
     this.$store.dispatch("updateSearchTerm", value);
     if (value.trim())
       axios
-        .get(`${window.location.hostname}/tvsearch?search=${value}`)
-        .then((result) => this.refreshSearchResults(result.data));
+        .get(`tvsearch?search=${value}`)
+        .then(result => this.refreshSearchResults(result.data));
   }
 
   @Prop({ required: true })

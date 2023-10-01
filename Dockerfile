@@ -14,4 +14,4 @@ RUN npm run build
 ENV PORT 80
 EXPOSE $PORT
 
-CMD ["node" "server.js"]
+CMD ["node", "server.js"]

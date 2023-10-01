@@ -29,11 +29,7 @@ export default Vue.extend({
   created: async function() {
     return (this.showTitle =
       this.$store.getters.getCached(this.$route.query.id) ||
-      (
-        await axios.get(
-          `${window.location.hostname}/tvtitle?id=${this.$route.query.id}`
-        )
-      ).data);
+      (await axios.get(`tvtitle?id=${this.$route.query.id}`)).data);
   }
 });
 </script>
